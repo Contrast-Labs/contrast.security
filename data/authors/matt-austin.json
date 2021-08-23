@@ -1,0 +1,12 @@
+{
+  "name": "Matt Austin",
+  "title": "Director of Security Research",
+  "bio": "Matt is an accomplished application security expert with over 11 years of experience focused on security research, development, and engineering.",
+  "image": "../../images/authors/contrastninja.jpg",
+  "weight": 1,
+  "social": {
+    "twitter": "mattaustin",
+    "github": "https://www.github.com/matt-",
+    "website": "https://maustin.net/"
+  }
+}

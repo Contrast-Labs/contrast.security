@@ -1,0 +1,12 @@
+{
+  "name": "David Lindner",
+  "title": "Chief Information Security Officer",
+  "bio": "David is an experienced application security professional with over 20 years in cybersecurity. In addition to serving as the chief information security officer, David leads the Contrast Labs team that is focused on analyzing threat intelligence to help enterprise clients develop more proactive approaches to their application security programs. Throughout his career, David has worked within multiple disciplines in the security field—from application development, to network architecture design and support, to IT security and consulting, to security training, to application security. Over the past decade, David has specialized in all things related to mobile applications and securing them. He has worked with many clients across industry sectors, including financial, government, automobile, healthcare, and retail. David is an active participant in numerous bug bounty programs.",
+  "image": "../../images/authors/contrastninja.jpg",
+  "weight": 1,
+  "social": {
+    "twitter": "golfhackerdave",
+    "github": "https://www.github.com/golfhackerdave",
+    "website": "??"
+  }
+}
