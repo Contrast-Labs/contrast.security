@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="en" data-figures="" class="page">
+  <head>
+<title>Contrast Labs Reveals Dependency Confusion Vulnerability in Microsoft Teams | Contrast Labs</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script async src="https://www.googletagmanager.com/gtag/js?id=XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'XXXXXXXXXX');
+</script>
+
+  
+<meta property="og:locale" content="en" />
+
+<meta property="og:type" content="article">
+<meta name="description" content="Matt Austin reviews the risk of dependency confusion.">
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:creator" content="@_contrast_labs">
+<meta name="twitter:title" content="Contrast Labs Reveals Dependency Confusion Vulnerability in Microsoft Teams" />
+<meta property="og:url" content="https://contrast.security/post/dependency-confusion-microsoft-teams/" />
+<meta property="og:title" content="Contrast Labs Reveals Dependency Confusion Vulnerability in Microsoft Teams" />
+<meta property="og:description" content="Matt Austin reviews the risk of dependency confusion." />
+<meta property="og:image" content="https://contrast.security/images/microsoft-teams.png" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="https://contrast.security/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://contrast.security/icons/favicon-32x32.png">
+<link rel="manifest" href="https://contrast.security/icons/site.webmanifest">
+
+<link rel="canonical" href="https://contrast.security/post/dependency-confusion-microsoft-teams/">
+
+    
+
+    
+    
+    <link rel="preload" href="https://contrast.security/css/styles.830f689224ac89b4dc90870f1c0829013c2d8a71d533447e3bd5068437cdaefd90122ff2b457ee4000213d015469eaa7813d2d119ab4b09abf705a4aae3bb68d.css" integrity = "sha512-gw9okiSsibTckIcPHAgpATwtinHVM0R&#43;O9UGhDfNrv2QEi/ytFfuQAAhPQFUaeqngT0tEZq0sJq/cFpKrju2jQ==" as="style" crossorigin="anonymous">
+    <link rel="preload" href="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" as="script" integrity=
+    "sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" type="text/css" href="https://contrast.security/css/styles.830f689224ac89b4dc90870f1c0829013c2d8a71d533447e3bd5068437cdaefd90122ff2b457ee4000213d015469eaa7813d2d119ab4b09abf705a4aae3bb68d.css" integrity="sha512-gw9okiSsibTckIcPHAgpATwtinHVM0R&#43;O9UGhDfNrv2QEi/ytFfuQAAhPQFUaeqngT0tEZq0sJq/cFpKrju2jQ==" crossorigin="anonymous">
+    
+  </head>
+  
+  
+    
+  
+  <body data-code="7" data-lines="false" id="documentTop">
+
+<header class="nav_header" >
+  <nav class="nav"><a href='https://contrast.security/' class="nav_brand nav_item" title="Contrast Labs">
+  <img src="https://contrast.security/logos/logo.png" class="logo" alt="Contrast Labs">
+  <div class="nav_close">
+    <div><svg class="icon">
+  <use xlink:href="#open-menu"></use>
+</svg><svg class="icon">
+  <use xlink:href="#closeme"></use>
+</svg></div>
+  </div>
+</a>
+
+    <div class='nav_body nav_body_left'>
+      
+      
+      
+        
+
+  <div class="nav_parent">
+    <a href="https://contrast.security/" class="nav_item" title="Home">Home </a>
+  </div>
+  <div class="nav_parent">
+    <a href="https://contrast.security/about/" class="nav_item" title="About">About </a>
+  </div>
+      
+<div class='follow'>
+  <a href="https://github.com/#">
+    <svg class="icon">
+  <use xlink:href="#github"></use>
+</svg>
+  </a>
+  <a href="https://twitter.com/_contrast_labs">
+    <svg class="icon">
+  <use xlink:href="#twitter"></use>
+</svg>
+  </a>
+  <a href="https://www.linkedin.com/in/#">
+    <svg class="icon">
+  <use xlink:href="#linkedin"></use>
+</svg>
+  </a>
+    
+  <a href="https://contrast.security/index.xml">
+    <svg class="icon">
+  <use xlink:href="#rss"></use>
+</svg>
+  </a>
+<div class="color_mode">
+  <input type="checkbox" class="color_choice" id="mode">
+</div>
+
+</div>
+
+    </div>
+  </nav>
+</header>
+
+    <main>
+  
+<div class="grid-inverse wrap content">
+  <article class="post_content">
+    <h1 class="post_title">Contrast Labs Reveals Dependency Confusion Vulnerability in Microsoft Teams</h1>
+<div class="post_meta">  
+  <span class="post_author">By <div class="post_author_name">Matt Austin</div>, Director of Security Research</span> 
+  <span><svg class="icon">
+  <use xlink:href="#calendar"></use>
+</svg></span>
+  <span class="post_date">
+      Mar 4, 2021</span>
+  <span class="post_time"> · 9 min read</span><span>&nbsp;· <a href='https://contrast.security/tags/hacked' title="hacked" class="post_tag button button_translucent">hacked
+        </a><a href='https://contrast.security/tags/dependency-confusion' title="dependency-confusion" class="post_tag button button_translucent">dependency-confusion
+        </a>
+    </span>
+  <span class="page_only">&nbsp;·
+  <div class="post_share">
+    Share on:
+    <a href="https://twitter.com/intent/tweet?text=Contrast%20Labs%20Reveals%20Dependency%20Confusion%20Vulnerability%20in%20Microsoft%20Teams&url=https%3a%2f%2fcontrast.security%2fpost%2fdependency-confusion-microsoft-teams%2f&tw_p=tweetbutton" class="twitter" title="Share on Twitter" target="_blank" rel="nofollow">
+      <svg class="icon">
+  <use xlink:href="#twitter"></use>
+</svg>
+    </a>
+    <a href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fcontrast.security%2fpost%2fdependency-confusion-microsoft-teams%2f&t=Contrast%20Labs%20Reveals%20Dependency%20Confusion%20Vulnerability%20in%20Microsoft%20Teams" class="facebook" title="Share on Facebook" target="_blank" rel="nofollow">
+      <svg class="icon">
+  <use xlink:href="#facebook"></use>
+</svg>
+    </a>
+    <a href="#linkedinshare" id = "linkedinshare" class="linkedin" title="Share on LinkedIn" rel="nofollow">
+      <svg class="icon">
+  <use xlink:href="#linkedin"></use>
+</svg>
+    </a>
+    <a href="https://contrast.security/post/dependency-confusion-microsoft-teams/" title="Copy Link" class="link link_yank">
+      <svg class="icon">
+  <use xlink:href="#copy"></use>
+</svg>
+    </a>
+  </div>
+  </span>
+</div>
+    
+    <p>When the <a href="https://www.contrastsecurity.com/security-influencers/hackers-exploiting-covid-19-what-organizations-can-prevent?hsLang=en-us">COVID-19 pandemic</a> forced a large percentage of the world’s office workers to begin working remotely a year ago, organizations were forced to scramble to greatly accelerate their digital transformation. Deployments that may have been planned for years in the future suddenly had to be pulled off in a matter of weeks and days—all because of a sudden change in the way people work.</p>
+<p>Teleconferencing and collaboration tools were one key area that required swift action. Such tools had already been growing in importance in businesses of all types, but when offices closed, they became indispensable. Microsoft Teams was one of the tools that kept professionals—and the global economy— going at full speed during the pandemic. It is no wonder that the number of daily average users (DAU) on that application <a href="https://tomtalks.blog/2020/12/microsoft-teams-statistics/#:~:text=Microsoft%20Teams%20usage%20statistics&amp;text=There%20were%2044%20million%20users,115%20million%20daily%20active%20users.">increased</a> from 44 million in April 2020 to 75 million the following month.</p>
+<p>By December, Microsoft announced that Teams had reached <a href="https://www.microsoft.com/en-us/microsoft-365/blog/2020/10/28/microsoft-teams-reaches-115-million-dau-plus-a-new-daily-collaboration-minutes-metric-for-microsoft-365/">115 million DAU</a> — a 260% increase over nine months. At the same time, the company reported that Microsoft 365 users around the world were spending <a href="https://www.microsoft.com/en-us/microsoft-365/blog/2020/10/28/microsoft-teams-reaches-115-million-dau-plus-a-new-daily-collaboration-minutes-metric-for-microsoft-365/">30 billion minutes per day</a> collaborating with colleagues using Teams. This astounding statistic reflects both the large number of new users and increased usage by longtime customers—one consequence of a largely home-based workforce.</p>
+<p>These numbers make it abundantly clear that Teams has become a critical tool for many businesses, nonprofits, and government agencies. Organizations that use Teams should be aware of the dependency confusion vulnerability that I recently discovered in that application and reported to Microsoft. Fortunately, Microsoft has already taken steps to deal with the specific issue I identified. But given the number of similar vulnerabilities that have been discovered over the past few weeks, it is clear that dependency confusion is a common problem across the industry.</p>
+<h2 id="dependency-confusion-research-uncovers-new-vulnerabilities">Dependency Confusion Research Uncovers New Vulnerabilities</h2>
+<p>First, a little background. As I described in a <a href="https://www.contrastsecurity.com/security-influencers/dependency-confusion-a-new-third-party-risk-for-the-software-factory?hsLang=en-us">recent blog post</a>, security researcher Alex Birsan <a href="https://blog.sonatype.com/sonatype-spots-150-malicious-npm-packages-copying-recent-software-supply-chain-attacks">used dependency confusion attacks</a> to push harmless proof-of-concept (POC) code to internal application development builds at more than 35 technology companies. Needless to say, his research generated significant buzz in the development and application security communities when it was published. The fact that he was able to infiltrate the software factories at some of the world’s most technologically advanced companies should give pause to any organization that uses software.</p>
+<p>Dependency confusion involves the creation of packages on third-party libraries that have identical names to packages stored in a company’s internal repository. The goal is to trick developers and automated systems into using the wrong library because of defaults configured into package managers that show a preference for external libraries over internal ones.</p>
+<p>While it should be difficult for external users—whether bad actors, legitimate developers, or security researchers—to even find the names of packages stored in internal repositories, Birsan was able to find the names of these packages in the applications themselves—and was able to replicate that accomplishment over at least 35 applications.</p>
+<p>Since Birsan’s research was published, <a href="https://www.bleepingcomputer.com/news/security/malicious-npm-packages-target-amazon-slack-with-new-dependency-attacks/">multiple reports</a> of bad actors using the technique have <a href="https://info.qentinel.com/blog/dependency-confusion-attack">started to appear</a>. In addition, other security researchers, including myself, began exploring various Software-as-a-Service (SaaS)-based applications to see if we could find dependency confusion vulnerabilities that could be exploited by attackers.</p>
+<h2 id="my-research-on-microsoft-teams">My Research on Microsoft Teams</h2>
+<p>A member of the Contrast Labs team, I specialize in security research on applications created with the Electron framework, including Microsoft Teams. Previously, I have discovered and reported several remote code execution vulnerabilities in that application. Given my background, I decided to contribute to the effort by examining Teams to see if I could identify a dependency confusion vulnerability.</p>
+<h2 id="optional-dependencies-provide-an-opening">Optional Dependencies Provide an Opening</h2>
+<p>I began by looking at the dependencies used by the Teams desktop application. In one section of the application, I saw a node.js package called “Optional Dependencies.” Typically, the intent of optional dependencies is to provide a place to store binary files that are a part of the testing suite, but not the production application.</p>
+<p>The interesting thing about optional dependencies is that if they do not exist in the repository from which a developer is trying to pull them, the build will fail silently. Thus, developers must write code that is relatively defensive when optional dependencies exist. Specifically, one cannot “depend” on a dependency that is optional.</p>
+<p>Inside the Teams desktop application is a package file that lists the dependencies that the application needed in order to be built. When one downloads and installs the application, it does not reach out to the dependency managers. This is because every part of the application is built on a Microsoft server somewhere, after which it is shipped to customers.</p>
+<p><img src="../../images/teams-manifest.png" /></p>
+<p>Now back to what I discovered. When analyzing the package, I noticed a number of modules in both public and private repositories. I also saw that some of the private packages were not taking advantage of the <a href="https://docs.npmjs.com/cli/v7/using-npm/scope">scoping capability</a> provided by npm. I noted that some of the optional dependencies did not exist on disk inside the package itself. This means that during the build process those dependencies would not be found in any repository—public or private. By design, these optional dependencies failed silently whenever the application attempted to pull them from both the public and private repositories.</p>
+<h2 id="my-probe-gets-a-response">My Probe Gets a Response</h2>
+<p>I then selected one of the modules that was listed as an “optional dependency” and registered it on npm, setting the version to 0.0.1. I added a simple line of code in the install script of the package to alert me when it was installed. Once I was ready to deploy, I set the version of the module to match the version number from the application. At this point, I had two choices: bump the version number up by one and wait for Microsoft to update and pull in the new version, or keep it at the current version and hope that a build server would pull in a fresh copy of it (not using packagelock.json).</p>
+<p>There are risks either way, but I decided to do what would be least impactful—keeping the version number the same. As soon as I set one of the dependencies to a high enough version, I started getting requests from the module being installed from a number of internal Microsoft IP addresses. The name of the module was relatively generic, but it was Microsoft-specific and not an overly common word.</p>
+<p><img src="../../images/teams-post-install.png" /></p>
+<p>I happened to be doing this research late at night. Based on that and other factors, I deduced that the responses were most likely from internal, automated resources within Microsoft that were pulling the dependencies and installing them—perhaps an automated continuous integration/continuous deployment (CI/CD) server. But it could also have been a live developer working a late shift in the U.S. or a daytime shift somewhere overseas.</p>
+<h2 id="the-risk-posed-by-this-vulnerability">The Risk Posed By This Vulnerability</h2>
+<p>Whether the responses I saw were automated or manual, the fact that I was able to generate this reaction poses significant risk. By taking advantage of the post-install script, I was able to execute code in whatever environment this was being installed on. If attackers were to execute code the way I did on a build server for a desktop application update that was about to be distributed, they could insert anything they wanted into that update, and that code would go out to every desktop using Teams—more than 115 million machines. Such an attack could have monumental repercussions, potentially affecting as many organizations as the massive <a href="https://www.contrastsecurity.com/security-influencers/solarwinds-hack-exposes-long-overdue-prioritization-of-software-security?hsLang=en-us">attack on the SolarWinds software factory</a> that was revealed in December.</p>
+<p><img src="../../images/teams-build-server.png" /></p>
+<p>And the risk of this vulnerability may not be limited to Microsoft Teams. The fact that this package is stored in an internal repository means that it is likely used in any number of other Microsoft products. If the code in question were only a part of the Teams desktop application, it would likely be simply added to the software as custom code rather than being stored in an internal repository. As an example, the specific module used in this case is also used by Skype, which could potentially fall victim to the same kind of attack.</p>
+<h2 id="protecting-the-software-supply-chain">Protecting the Software Supply Chain</h2>
+<p>The research findings described here highlight the need for organizations to take the entire software supply chain into account when designing an application security strategy. The need to protect internally developed applications—and the third-party libraries that comprise so much of their code base these days—may seem obvious. And the importance of securing and properly configuring the developer tools used to build that software is becoming more apparent as vulnerabilities like dependency confusion are revealed.</p>
+<p>But the software supply chain does not end with the internal software factory. The potential vulnerability that I discovered in Microsoft Teams is a reminder that an organization’s application security strategy must extend to include off-the-shelf applications that every organization uses for vital business functions. Microsoft customers using the Teams desktop application have no control over how that software is produced, but they must be prepared for instances when it may be compromised.</p>
+<h2 id="the-story-continues">The Story Continues</h2>
+<p>I submitted this vulnerability to Microsoft late in the day on February 12—the Friday before a holiday weekend. Since my submission, I have received feedback from Microsoft that the packages we viewed as “at risk” were removed—or more specifically “unpublished by npm-support.” (It should be noted that Microsoft owns GitHub, which owns npm.) This means that these specific packages no longer pose a risk to Microsoft and its customers. As a result of these actions, Microsoft closed the issue as a “No Fix.” However, Microsoft has yet to give us any information around their internal investigations around their actual risk.</p>
+<p><img src="../../images/teams-timeline.png" /></p>
+<p>Working on bug bounties is a regular part of what my team and I do at Contrast Labs. I personally derive a lot of enjoyment from doing security research. It keeps me sharp and helps keep me up with the tactics of cyber criminals. In particular, since we use a lot of SaaS applications internally at Contrast, it helps our organization as much as it helps others.</p>
+<h2 id="for-more-information">For More Information</h2>
+<p>For more information on newly discovered dependency confusion vulnerabilities impacting the software factories at numerous companies, read my earlier blog, “<a href="https://www.contrastsecurity.com/security-influencers/dependency-confusion-a-new-third-party-risk-for-the-software-factory?hsLang=en-us">Dependency Confusion: A New Third-Party Risk for the Software Factory</a>”.</p>
+<p>Readers also may want to check out the webinar, “<a href="https://www.contrastsecurity.com/webinar/how-dependency-confusion-poses-a-serious-risk-in-the-software-supply-chain?utm_campaign=WB-swsupchain-N-Q1FY22&amp;utm_medium=email&amp;_hsmi=112430204&amp;_hsenc=p2ANqtz-_oISSnTOAus6qoDHHiJDFo3upN2n8n08Xax2azagfhrYtrTGe3JJKgr7Gx6KiOj1yVUt8ZrHqyPk2-ZLYBqwdk6W0MR38pxajcGmiHfg7mePRBnRs&amp;utm_content=112430204&amp;utm_source=hs_email&amp;hsLang=en-us">How Dependency Confusion Poses a Serious Risk in the Software Supply Chain</a>”, and my interview for the Inside AppSec Podcast, “<a href="https://soundcloud.com/contrastsecurity/contrast-labs-researcher-finds-dependency-confusion-vulnerability-in-microsoft-teams">Contrast Labs Researcher Finds Dependency Confusion Vulnerability in Microsoft Teams</a>”.</p>
+
+
+  </article>
+<aside class="sidebar">
+  <section class="sidebar_inner">
+        <div class="author_header">
+          <img src="https://contrast.security/images/contrastninja.jpg" alt="Contrast Labs photo">
+          <h2>Contrast Labs</h2>
+        </div>
+      <div class="author_bio">
+        Security researchers, security engineers, speakers, and community contributers.
+      </div>
+      <a href='https://contrast.security/about/' class="button mt-1" role="button" title='Read More'>Read More</a>
+    <h2 class="mt-4">Recent Posts</h2>
+    <ul class="flex-column">
+      <li>
+        <a href="https://contrast.security/post/dependency-confusion-third-party-risk/" class="nav-link" title="Dependency Confusion: A New Third-Party Risk for the Software Factory">Dependency Confusion: A New Third-Party Risk for the Software Factory</a>
+      </li>
+      <li>
+        <a href="https://contrast.security/post/tips-and-tactics-ctfs/" class="nav-link" title="Tips and Tactics for Creating your own Capture-the-Flag Event">Tips and Tactics for Creating your own Capture-the-Flag Event</a>
+      </li>
+      <li>
+        <a href="https://contrast.security/post/privilege-escalation-ghost/" class="nav-link" title="Privilege Escalation in Popular Blogging Platform">Privilege Escalation in Popular Blogging Platform</a>
+      </li>
+    </ul>
+    <div>
+      <h2 class="mt-4 taxonomy" id="tags-section">Tags</h2>
+      <nav class="tags_nav">
+        <a href='https://contrast.security/tags/dependency-confusion/' class="post_tag button button_translucent" title="dependency-confusion">
+          DEPENDENCY-CONFUSION
+          <span class="button_tally">2</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/hacked/' class="post_tag button button_translucent" title="hacked">
+          HACKED
+          <span class="button_tally">2</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/threat-hunting/' class="post_tag button button_translucent" title="threat-hunting">
+          THREAT-HUNTING
+          <span class="button_tally">2</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/ctf/' class="post_tag button button_translucent" title="ctf">
+          CTF
+          <span class="button_tally">1</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/poc/' class="post_tag button button_translucent" title="poc">
+          POC
+          <span class="button_tally">1</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/privilege-escalation/' class="post_tag button button_translucent" title="privilege-escalation">
+          PRIVILEGE-ESCALATION
+          <span class="button_tally">1</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/thought-leaders/' class="post_tag button button_translucent" title="thought-leaders">
+          THOUGHT-LEADERS
+          <span class="button_tally">1</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/tutorials/' class="post_tag button button_translucent" title="tutorials">
+          TUTORIALS
+          <span class="button_tally">1</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/xss/' class="post_tag button button_translucent" title="xss">
+          XSS
+          <span class="button_tally">1</span>
+        </a>
+        
+        
+      </nav>
+    </div>
+  </section>
+</aside>
+
+  
+</div>
+    </main><svg width="0" height="0" class="hidden">
+  <symbol viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="facebook">
+    <path d="M437 0H75C33.648 0 0 33.648 0 75v362c0 41.352 33.648 75 75 75h151V331h-60v-90h60v-61c0-49.629 40.371-90 90-90h91v90h-91v61h91l-15 90h-76v181h121c41.352 0 75-33.648 75-75V75c0-41.352-33.648-75-75-75zm0 0"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.001 18.001" id="twitter">
+    <path d="M15.891 4.013c.808-.496 1.343-1.173 1.605-2.034a8.68 8.68 0 0 1-2.351.861c-.703-.756-1.593-1.14-2.66-1.14-1.043 0-1.924.366-2.643 1.078a3.56 3.56 0 0 0-1.076 2.605c0 .309.039.585.117.819-3.076-.105-5.622-1.381-7.628-3.837-.34.601-.51 1.213-.51 1.846 0 1.301.549 2.332 1.645 3.089-.625-.053-1.176-.211-1.645-.47 0 .929.273 1.705.82 2.388a3.623 3.623 0 0 0 2.115 1.291c-.312.08-.641.118-.979.118-.312 0-.533-.026-.664-.083.23.757.664 1.371 1.291 1.841a3.652 3.652 0 0 0 2.152.743C4.148 14.173 2.625 14.69.902 14.69c-.422 0-.721-.006-.902-.038 1.697 1.102 3.586 1.649 5.676 1.649 2.139 0 4.029-.542 5.674-1.626 1.645-1.078 2.859-2.408 3.639-3.974a10.77 10.77 0 0 0 1.172-4.892v-.468a7.788 7.788 0 0 0 1.84-1.921 8.142 8.142 0 0 1-2.11.593z"
+      ></path>
+  </symbol>
+  <symbol aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="mail">
+    <path  d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="calendar">
+    <path d="M452 40h-24V0h-40v40H124V0H84v40H60C26.916 40 0 66.916 0 100v352c0 33.084 26.916 60 60 60h392c33.084 0 60-26.916 60-60V100c0-33.084-26.916-60-60-60zm20 412c0 11.028-8.972 20-20 20H60c-11.028 0-20-8.972-20-20V188h432v264zm0-304H40v-48c0-11.028 8.972-20 20-20h24v40h40V80h264v40h40V80h24c11.028 0 20 8.972 20 20v48z"></path>
+    <path d="M76 230h40v40H76zm80 0h40v40h-40zm80 0h40v40h-40zm80 0h40v40h-40zm80 0h40v40h-40zM76 310h40v40H76zm80 0h40v40h-40zm80 0h40v40h-40zm80 0h40v40h-40zM76 390h40v40H76zm80 0h40v40h-40zm80 0h40v40h-40zm80 0h40v40h-40zm80-80h40v40h-40z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="github">
+    <path d="M255.968 5.329C114.624 5.329 0 120.401 0 262.353c0 113.536 73.344 209.856 175.104 243.872 12.8 2.368 17.472-5.568 17.472-12.384 0-6.112-.224-22.272-.352-43.712-71.2 15.52-86.24-34.464-86.24-34.464-11.616-29.696-28.416-37.6-28.416-37.6-23.264-15.936 1.728-15.616 1.728-15.616 25.696 1.824 39.2 26.496 39.2 26.496 22.848 39.264 59.936 27.936 74.528 21.344 2.304-16.608 8.928-27.936 16.256-34.368-56.832-6.496-116.608-28.544-116.608-127.008 0-28.064 9.984-51.008 26.368-68.992-2.656-6.496-11.424-32.64 2.496-68 0 0 21.504-6.912 70.4 26.336 20.416-5.696 42.304-8.544 64.096-8.64 21.728.128 43.648 2.944 64.096 8.672 48.864-33.248 70.336-26.336 70.336-26.336 13.952 35.392 5.184 61.504 2.56 68 16.416 17.984 26.304 40.928 26.304 68.992 0 98.72-59.84 120.448-116.864 126.816 9.184 7.936 17.376 23.616 17.376 47.584 0 34.368-.32 62.08-.32 70.496 0 6.88 4.608 14.88 17.6 12.352C438.72 472.145 512 375.857 512 262.353 512 120.401 397.376 5.329 255.968 5.329z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 212" id="gitlab">
+    <path d="M12.3 74.7h54L43.3 3c-1-3.6-6.4-3.6-7.6 0L12.3 74.8z" />
+    <path d="M12.3 74.7L.5 111c-1 3.2 0 6.8 3 8.8l101.6 74-92.5-119z"/>
+    <path d="M105 193.7l-38.6-119h-54l92.7 119z"/>
+    <path d="M105 193.7l38.7-119H66.4l38.7 119z"/>
+    <path d="M105 193.7l38.7-119H198l-93 119z"/>
+    <path d="M198 74.7l11.6 36.2c1 3 0 6.6-3 8.6l-101.5 74 93-119z"/>
+    <path d="M198 74.7h-54.3L167 3c1.2-3.6 6.4-3.6 7.6 0L198 74.8z"/> 
+  </symbol>
+  <symbol viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="rss">
+    <circle cx="3.429" cy="20.571" r="3.429"></circle>
+    <path d="M11.429 24h4.57C15.999 15.179 8.821 8.001 0 8v4.572c6.302.001 11.429 5.126 11.429 11.428z"></path>
+    <path d="M24 24C24 10.766 13.234 0 0 0v4.571c10.714 0 19.43 8.714 19.43 19.429z"></path>
+  </symbol>
+  <symbol viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="linkedin">
+    <path d="M437 0H75C33.648 0 0 33.648 0 75v362c0 41.352 33.648 75 75 75h362c41.352 0 75-33.648 75-75V75c0-41.352-33.648-75-75-75zM181 406h-60V196h60zm0-240h-60v-60h60zm210 240h-60V286c0-16.54-13.46-30-30-30s-30 13.46-30 30v120h-60V196h60v11.309C286.719 202.422 296.93 196 316 196c40.691.043 75 36.547 75 79.688zm0 0"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 612" id="arrow">
+    <path d="M604.501 440.509L325.398 134.956c-5.331-5.357-12.423-7.627-19.386-7.27-6.989-.357-14.056 1.913-19.387 7.27L7.499 440.509c-9.999 10.024-9.999 26.298 0 36.323s26.223 10.024 36.222 0l262.293-287.164L568.28 476.832c9.999 10.024 26.222 10.024 36.221 0 9.999-10.023 9.999-26.298 0-36.323z"></path>
+  </symbol>
+  <symbol viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" id="carly">
+    <path d="M504.971 239.029L448 182.059V84c0-46.317-37.682-84-84-84h-44c-13.255 0-24 10.745-24 24s10.745 24 24 24h44c19.851 0 36 16.149 36 36v108c0 6.365 2.529 12.47 7.029 16.971L454.059 256l-47.029 47.029A24.002 24.002 0 0 0 400 320v108c0 19.851-16.149 36-36 36h-44c-13.255 0-24 10.745-24 24s10.745 24 24 24h44c46.318 0 84-37.683 84-84v-98.059l56.971-56.971c9.372-9.372 9.372-24.568 0-33.941zM112 192V84c0-19.851 16.149-36 36-36h44c13.255 0 24-10.745 24-24S205.255 0 192 0h-44c-46.318 0-84 37.683-84 84v98.059l-56.971 56.97c-9.373 9.373-9.373 24.568 0 33.941L64 329.941V428c0 46.317 37.682 84 84 84h44c13.255 0 24-10.745 24-24s-10.745-24-24-24h-44c-19.851 0-36-16.149-36-36V320c0-6.365-2.529-12.47-7.029-16.971L57.941 256l47.029-47.029A24.002 24.002 0 0 0 112 192z"></path>
+  </symbol>
+  <symbol viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="copy">
+    <path d="M23 2.75A2.75 2.75 0 0 0 20.25 0H8.75A2.75 2.75 0 0 0 6 2.75v13.5A2.75 2.75 0 0 0 8.75 19h11.5A2.75 2.75 0 0 0 23 16.25zM18.25 14.5h-7.5a.75.75 0 0 1 0-1.5h7.5a.75.75 0 0 1 0 1.5zm0-3h-7.5a.75.75 0 0 1 0-1.5h7.5a.75.75 0 0 1 0 1.5zm0-3h-7.5a.75.75 0 0 1 0-1.5h7.5a.75.75 0 0 1 0 1.5z"></path>
+    <path d="M8.75 20.5a4.255 4.255 0 0 1-4.25-4.25V2.75c0-.086.02-.166.025-.25H3.75A2.752 2.752 0 0 0 1 5.25v16A2.752 2.752 0 0 0 3.75 24h12a2.752 2.752 0 0 0 2.75-2.75v-.75z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.001 512.001" id="closeme">
+    <path d="M284.286 256.002L506.143 34.144c7.811-7.811 7.811-20.475 0-28.285-7.811-7.81-20.475-7.811-28.285 0L256 227.717 34.143 5.859c-7.811-7.811-20.475-7.811-28.285 0-7.81 7.811-7.811 20.475 0 28.285l221.857 221.857L5.858 477.859c-7.811 7.811-7.811 20.475 0 28.285a19.938 19.938 0 0 0 14.143 5.857 19.94 19.94 0 0 0 14.143-5.857L256 284.287l221.857 221.857c3.905 3.905 9.024 5.857 14.143 5.857s10.237-1.952 14.143-5.857c7.811-7.811 7.811-20.475 0-28.285L284.286 256.002z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="open-menu">
+    <path d="M492 236H20c-11.046 0-20 8.954-20 20s8.954 20 20 20h472c11.046 0 20-8.954 20-20s-8.954-20-20-20zm0-160H20C8.954 76 0 84.954 0 96s8.954 20 20 20h472c11.046 0 20-8.954 20-20s-8.954-20-20-20zm0 320H20c-11.046 0-20 8.954-20 20s8.954 20 20 20h472c11.046 0 20-8.954 20-20s-8.954-20-20-20z"></path>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="instagram">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id=youtube>
+    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+  </symbol>
+  <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="stackoverflow">
+    <path d="M21 27v-8h3v11H0V19h3v8h18z"></path><path d="M17.1.2L15 1.8l7.9 10.6 2.1-1.6L17.1.2zm3.7 14.7L10.6 6.4l1.7-2 10.2 8.5-1.7 2zM7.2 12.3l12 5.6 1.1-2.4-12-5.6-1.1 2.4zm-1.8 6.8l13.56 1.96.17-2.38-13.26-2.55-.47 2.97zM19 25H5v-3h14v3z"></path>
+  </symbol>
+</svg>
+
+
+<footer class="footer">
+  <div class="footer_inner wrap pale">
+    <img src='https://contrast.security/icons/apple-touch-icon.png' class="icon icon_2 transparent" alt="Contrast Labs">
+    <p>Copyright&nbsp;<span class="year"></span>&nbsp;CONTRAST LABS. All Rights Reserved</p><a class="to_top" href="#documentTop">
+  <svg class="icon">
+  <use xlink:href="#arrow"></use>
+</svg>
+</a>
+
+  </div>
+</footer>
+
+    <script type="text/javascript" src="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" integrity="sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous"></script>
+    
+  </body>
+</html>
