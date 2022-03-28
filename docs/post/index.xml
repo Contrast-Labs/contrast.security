@@ -6,8 +6,52 @@
     <description>Recent content in Posts on Contrast Labs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Copyright © 2021, Contrast Security; all rights reserved.</copyright>
-    <lastBuildDate>Thu, 04 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/post/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>Copyright © 2022, Contrast Security; all rights reserved.</copyright>
+    <lastBuildDate>Wed, 23 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework</title>
+      <link>https://contrast.security/post/xss-vuln-in-quart-python-framework/</link>
+      <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://contrast.security/post/xss-vuln-in-quart-python-framework/</guid>
+      <description>
+        
+          &lt;p&gt;If you love the &lt;a href=&#34;https://flask.palletsprojects.com/&#34;&gt;Flask&lt;/a&gt; framework but would like to leverage the async features of Python 3, &lt;a href=&#34;https://pgjones.gitlab.io/quart/&#34;&gt;Quart&lt;/a&gt; is a microframework à la Flask intended to transition applications from Flask to Quart.&lt;/p&gt;
+&lt;p&gt;Contrast aims to support customers and developers using any framework. As part of my work to add support for Quart, I discovered a vulnerability in Quart v0.16.3 and earlier. This vulnerability was quickly confirmed by the Contrast &lt;a href=&#34;https://pypi.org/project/contrast-agent&#34;&gt;Python Agent&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;reflected-xss-vulnerability-in-quart&#34;&gt;Reflected XSS Vulnerability in Quart&lt;/h2&gt;
+&lt;p&gt;Before delving into the vulnerability I found in Quart code, allow me to point you to some excellent resources. Reflected XSS is a well documented vulnerability. You may find more information in our Contrast Security &lt;a href=&#34;https://www.contrastsecurity.com/knowledge-hub/glossary/cross-site-scripting-prevention&#34;&gt;Cross-Site Scripting&lt;/a&gt; page which describes various types of XSS vulnerabilities, including Reflected XSS, and the &lt;a href=&#34;https://owasp.org/www-community/attacks/xss/&#34;&gt;OWASP Foundation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;As a Python Agent engineer, I&#39;m deeply familiar with all types of security vulnerabilities. As I worked on adding Contrast support for Quart, I noticed that the &lt;code&gt;redirect&lt;/code&gt; function &lt;a href=&#34;https://gitlab.com/pgjones/quart/-/blob/0.16.3/src/quart/utils.py#L37&#34;&gt;injected&lt;/a&gt; the location of the redirected url directly in the response body. I saw no sanitization of the &lt;code&gt;location&lt;/code&gt; argument. I dug around the public &lt;a href=&#34;https://pgjones.gitlab.io/quart/tutorials/blog_tutorial.html&#34;&gt;Quart documentation&lt;/a&gt; and noticed that all calls to &lt;code&gt;redirect&lt;/code&gt; relied on &lt;code&gt;url_for&lt;/code&gt; having been called. My senses began tingling:  we can&#39;t always expect programmers will properlly sanitize and encode input. I could see that anything passed on to &lt;code&gt;redirect&lt;/code&gt; would be reflected right back to the user via the response body.&lt;/p&gt;
+&lt;p&gt;To test my hypothesis, I ran the Contrast Python Agent and manually verified what I saw with my own eyes with a small Quart app.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 1&lt;/span&gt;from quart import Quart, request, redirect
+&lt;span class=&#34;ln&#34;&gt; 2&lt;/span&gt;from contrast.quart import ContrastMiddleware
+&lt;span class=&#34;ln&#34;&gt; 3&lt;/span&gt;
+&lt;span class=&#34;ln&#34;&gt; 4&lt;/span&gt;app = Quart(__name__)
+&lt;span class=&#34;ln&#34;&gt; 5&lt;/span&gt;app.asgi_app = ContrastMiddleware(app)
+&lt;span class=&#34;ln&#34;&gt; 6&lt;/span&gt;
+&lt;span class=&#34;ln&#34;&gt; 7&lt;/span&gt;@app.route(&amp;#34;/bad&amp;#34;)
+&lt;span class=&#34;ln&#34;&gt; 8&lt;/span&gt;async def unvalidated_redirect():
+&lt;span class=&#34;ln&#34;&gt; 9&lt;/span&gt;    user_input = request.args.get(&amp;#34;user_input&amp;#34;)
+&lt;span class=&#34;ln&#34;&gt;10&lt;/span&gt;    return redirect(user_input)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Serving the app with the ContrastMiddleware means that the Python Agent will assess the application code. The Python Agent immediately alerted me to a Reflected XSS vulnerability on the this app.&lt;/p&gt;
+&lt;p&gt;Please note that Python Agent support for Quart will be released soon. You will be able to reproduce this at that time. To learn how to use the Python Agent for currently supported frameworks, please visit our &lt;a href=&#34;https://docs.contrastsecurity.com/en/python.html&#34;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To manually verify that any input I send as a &lt;code&gt;user_input&lt;/code&gt; parameter will be reflected back in the response body, I issued this command on the terminal&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;curl &amp;quot;http://localhost:8000/bad?user_input=&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;It responded back with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;ln&#34;&gt;1&lt;/span&gt;&amp;lt;!doctype html&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;2&lt;/span&gt;&amp;lt;title&amp;gt;Redirect&amp;lt;/title&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;3&lt;/span&gt;&amp;lt;h1&amp;gt;Redirect&amp;lt;/h1&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;4&lt;/span&gt;You should be redirected to &amp;lt;a href=&amp;#34;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;#34;&amp;gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;lt;/a&amp;gt;, if not please click the link
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Voila! The &lt;code&gt;user_input&lt;/code&gt; script is right there. For more proof, I opened this on a browser.&lt;/p&gt;
+&lt;img src=&#39;../../images/reflected-xss.png&#39; /&gt;
+&lt;p&gt;At Contrast we value teamwork, so my next step was to ask my fellow Python Agent developers to verify what I saw, and they confirmed. The Contrast Labs team jumped on and also confirmed the finding.&lt;/p&gt;
+&lt;h2 id=&#34;response-from-quart-maintainer&#34;&gt;Response from Quart Maintainer&lt;/h2&gt;
+&lt;p&gt;Once Contrast confirmed my finding, I followed Contrast&#39;s &lt;a href=&#34;https://www.contrastsecurity.com/disclosure-policy&#34;&gt;Vulnerability Disclosure Policy&lt;/a&gt; and reached out to Quart&#39;s maintainer &lt;a href=&#34;https://pgjones.dev/&#34;&gt;Phil Jones&lt;/a&gt; via email. He responded briefly after and agreed I found a security bug that needed to be fixed ASAP.&lt;/p&gt;
+&lt;p&gt;Phil issued a &lt;a href=&#34;https://gitlab.com/pgjones/quart/-/commit/d125044a2292231fc5edd95cc5110d08640ecab5&#34;&gt;fix&lt;/a&gt; to the Quart code. I hope it gets released quickly!&lt;/p&gt;
+
+        
+      </description>
+    </item>
+    
     <item>
       <title>Contrast Labs Reveals Dependency Confusion Vulnerability in Microsoft Teams</title>
       <link>https://contrast.security/post/dependency-confusion-microsoft-teams/</link>
@@ -31,23 +75,23 @@
 &lt;p&gt;I began by looking at the dependencies used by the Teams desktop application. In one section of the application, I saw a node.js package called “Optional Dependencies.” Typically, the intent of optional dependencies is to provide a place to store binary files that are a part of the testing suite, but not the production application.&lt;/p&gt;
 &lt;p&gt;The interesting thing about optional dependencies is that if they do not exist in the repository from which a developer is trying to pull them, the build will fail silently. Thus, developers must write code that is relatively defensive when optional dependencies exist. Specifically, one cannot “depend” on a dependency that is optional.&lt;/p&gt;
 &lt;p&gt;Inside the Teams desktop application is a package file that lists the dependencies that the application needed in order to be built. When one downloads and installs the application, it does not reach out to the dependency managers. This is because every part of the application is built on a Microsoft server somewhere, after which it is shipped to customers.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/teams-manifest.png&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;../../images/teams-manifest.png&#34; /&gt;
 &lt;p&gt;Now back to what I discovered. When analyzing the package, I noticed a number of modules in both public and private repositories. I also saw that some of the private packages were not taking advantage of the &lt;a href=&#34;https://docs.npmjs.com/cli/v7/using-npm/scope&#34;&gt;scoping capability&lt;/a&gt; provided by npm. I noted that some of the optional dependencies did not exist on disk inside the package itself. This means that during the build process those dependencies would not be found in any repository—public or private. By design, these optional dependencies failed silently whenever the application attempted to pull them from both the public and private repositories.&lt;/p&gt;
 &lt;h2 id=&#34;my-probe-gets-a-response&#34;&gt;My Probe Gets a Response&lt;/h2&gt;
 &lt;p&gt;I then selected one of the modules that was listed as an “optional dependency” and registered it on npm, setting the version to 0.0.1. I added a simple line of code in the install script of the package to alert me when it was installed. Once I was ready to deploy, I set the version of the module to match the version number from the application. At this point, I had two choices: bump the version number up by one and wait for Microsoft to update and pull in the new version, or keep it at the current version and hope that a build server would pull in a fresh copy of it (not using packagelock.json).&lt;/p&gt;
 &lt;p&gt;There are risks either way, but I decided to do what would be least impactful—keeping the version number the same. As soon as I set one of the dependencies to a high enough version, I started getting requests from the module being installed from a number of internal Microsoft IP addresses. The name of the module was relatively generic, but it was Microsoft-specific and not an overly common word.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/teams-post-install.png&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;../../images/teams-post-install.png&#34; /&gt;
 &lt;p&gt;I happened to be doing this research late at night. Based on that and other factors, I deduced that the responses were most likely from internal, automated resources within Microsoft that were pulling the dependencies and installing them—perhaps an automated continuous integration/continuous deployment (CI/CD) server. But it could also have been a live developer working a late shift in the U.S. or a daytime shift somewhere overseas.&lt;/p&gt;
 &lt;h2 id=&#34;the-risk-posed-by-this-vulnerability&#34;&gt;The Risk Posed By This Vulnerability&lt;/h2&gt;
 &lt;p&gt;Whether the responses I saw were automated or manual, the fact that I was able to generate this reaction poses significant risk. By taking advantage of the post-install script, I was able to execute code in whatever environment this was being installed on. If attackers were to execute code the way I did on a build server for a desktop application update that was about to be distributed, they could insert anything they wanted into that update, and that code would go out to every desktop using Teams—more than 115 million machines. Such an attack could have monumental repercussions, potentially affecting as many organizations as the massive &lt;a href=&#34;https://www.contrastsecurity.com/security-influencers/solarwinds-hack-exposes-long-overdue-prioritization-of-software-security?hsLang=en-us&#34;&gt;attack on the SolarWinds software factory&lt;/a&gt; that was revealed in December.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/teams-build-server.png&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;../../images/teams-build-server.png&#34; /&gt;
 &lt;p&gt;And the risk of this vulnerability may not be limited to Microsoft Teams. The fact that this package is stored in an internal repository means that it is likely used in any number of other Microsoft products. If the code in question were only a part of the Teams desktop application, it would likely be simply added to the software as custom code rather than being stored in an internal repository. As an example, the specific module used in this case is also used by Skype, which could potentially fall victim to the same kind of attack.&lt;/p&gt;
 &lt;h2 id=&#34;protecting-the-software-supply-chain&#34;&gt;Protecting the Software Supply Chain&lt;/h2&gt;
 &lt;p&gt;The research findings described here highlight the need for organizations to take the entire software supply chain into account when designing an application security strategy. The need to protect internally developed applications—and the third-party libraries that comprise so much of their code base these days—may seem obvious. And the importance of securing and properly configuring the developer tools used to build that software is becoming more apparent as vulnerabilities like dependency confusion are revealed.&lt;/p&gt;
 &lt;p&gt;But the software supply chain does not end with the internal software factory. The potential vulnerability that I discovered in Microsoft Teams is a reminder that an organization’s application security strategy must extend to include off-the-shelf applications that every organization uses for vital business functions. Microsoft customers using the Teams desktop application have no control over how that software is produced, but they must be prepared for instances when it may be compromised.&lt;/p&gt;
 &lt;h2 id=&#34;the-story-continues&#34;&gt;The Story Continues&lt;/h2&gt;
 &lt;p&gt;I submitted this vulnerability to Microsoft late in the day on February 12—the Friday before a holiday weekend. Since my submission, I have received feedback from Microsoft that the packages we viewed as “at risk” were removed—or more specifically “unpublished by npm-support.” (It should be noted that Microsoft owns GitHub, which owns npm.) This means that these specific packages no longer pose a risk to Microsoft and its customers. As a result of these actions, Microsoft closed the issue as a “No Fix.” However, Microsoft has yet to give us any information around their internal investigations around their actual risk.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/teams-timeline.png&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;../../images/teams-timeline.png&#34; /&gt;
 &lt;p&gt;Working on bug bounties is a regular part of what my team and I do at Contrast Labs. I personally derive a lot of enjoyment from doing security research. It keeps me sharp and helps keep me up with the tactics of cyber criminals. In particular, since we use a lot of SaaS applications internally at Contrast, it helps our organization as much as it helps others.&lt;/p&gt;
 &lt;h2 id=&#34;for-more-information&#34;&gt;For More Information&lt;/h2&gt;
 &lt;p&gt;For more information on newly discovered dependency confusion vulnerabilities impacting the software factories at numerous companies, read my earlier blog, “&lt;a href=&#34;https://www.contrastsecurity.com/security-influencers/dependency-confusion-a-new-third-party-risk-for-the-software-factory?hsLang=en-us&#34;&gt;Dependency Confusion: A New Third-Party Risk for the Software Factory&lt;/a&gt;”.&lt;/p&gt;
@@ -139,7 +183,7 @@
 &lt;h2 id=&#34;what-is-a-ctf-event&#34;&gt;What Is a CTF event?&lt;/h2&gt;
 &lt;p&gt;A CTF event is a competition that takes major disciplines of information security and makes them into smaller, objectively measurable exercises. Participants attempt to solve challenges by solving, exploiting, breaking, or other cybersecurity tradecraft. There are two major types of CTFs: jeopardy and attack defend.&lt;/p&gt;
 &lt;p&gt;In a &lt;em&gt;jeopardy-style CTF event&lt;/em&gt;, participants are presented a board filled with categories and challenges of varying point levels. As challenges are solved, the team earns points associated with each challenge and moves up the leaderboard accordingly. Ties are often broken by whichever team first achieved the score. Jeopardy CTF contests are the most common form of cybersecurity competition today.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#39;../../images/ctf-jeopardy.webp&#39; /&gt;&lt;/p&gt;
+&lt;img src=&#39;../../images/ctf-jeopardy.webp&#39; /&gt;
 &lt;p&gt;&lt;em&gt;Attack defend CTF events&lt;/em&gt; are quite different in structure. Each team is scored based on the amount of time they keep services up and running throughout the event. Meanwhile, each team can also attack other teams’ services, which are often intentionally vulnerable in myriad ways.&lt;/p&gt;
 &lt;p&gt;From an educational standpoint, especially from the lens of developers, I believe the jeopardy-style CTF is best. Here, each participant is focused on challenging themselves, not their competitors. Thus, for the purposes of this post, I will address jeopardy-style CTFs only.&lt;/p&gt;
 &lt;h2 id=&#34;creating-the-ctf-event&#34;&gt;Creating the CTF Event&lt;/h2&gt;

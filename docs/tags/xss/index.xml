@@ -6,8 +6,52 @@
     <description>Recent content in xss on Contrast Labs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Copyright © 2021, Contrast Security; all rights reserved.</copyright>
-    <lastBuildDate>Mon, 29 Apr 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/tags/xss/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>Copyright © 2022, Contrast Security; all rights reserved.</copyright>
+    <lastBuildDate>Wed, 23 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/tags/xss/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework</title>
+      <link>https://contrast.security/post/xss-vuln-in-quart-python-framework/</link>
+      <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://contrast.security/post/xss-vuln-in-quart-python-framework/</guid>
+      <description>
+        
+          &lt;p&gt;If you love the &lt;a href=&#34;https://flask.palletsprojects.com/&#34;&gt;Flask&lt;/a&gt; framework but would like to leverage the async features of Python 3, &lt;a href=&#34;https://pgjones.gitlab.io/quart/&#34;&gt;Quart&lt;/a&gt; is a microframework à la Flask intended to transition applications from Flask to Quart.&lt;/p&gt;
+&lt;p&gt;Contrast aims to support customers and developers using any framework. As part of my work to add support for Quart, I discovered a vulnerability in Quart v0.16.3 and earlier. This vulnerability was quickly confirmed by the Contrast &lt;a href=&#34;https://pypi.org/project/contrast-agent&#34;&gt;Python Agent&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;reflected-xss-vulnerability-in-quart&#34;&gt;Reflected XSS Vulnerability in Quart&lt;/h2&gt;
+&lt;p&gt;Before delving into the vulnerability I found in Quart code, allow me to point you to some excellent resources. Reflected XSS is a well documented vulnerability. You may find more information in our Contrast Security &lt;a href=&#34;https://www.contrastsecurity.com/knowledge-hub/glossary/cross-site-scripting-prevention&#34;&gt;Cross-Site Scripting&lt;/a&gt; page which describes various types of XSS vulnerabilities, including Reflected XSS, and the &lt;a href=&#34;https://owasp.org/www-community/attacks/xss/&#34;&gt;OWASP Foundation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;As a Python Agent engineer, I&#39;m deeply familiar with all types of security vulnerabilities. As I worked on adding Contrast support for Quart, I noticed that the &lt;code&gt;redirect&lt;/code&gt; function &lt;a href=&#34;https://gitlab.com/pgjones/quart/-/blob/0.16.3/src/quart/utils.py#L37&#34;&gt;injected&lt;/a&gt; the location of the redirected url directly in the response body. I saw no sanitization of the &lt;code&gt;location&lt;/code&gt; argument. I dug around the public &lt;a href=&#34;https://pgjones.gitlab.io/quart/tutorials/blog_tutorial.html&#34;&gt;Quart documentation&lt;/a&gt; and noticed that all calls to &lt;code&gt;redirect&lt;/code&gt; relied on &lt;code&gt;url_for&lt;/code&gt; having been called. My senses began tingling:  we can&#39;t always expect programmers will properlly sanitize and encode input. I could see that anything passed on to &lt;code&gt;redirect&lt;/code&gt; would be reflected right back to the user via the response body.&lt;/p&gt;
+&lt;p&gt;To test my hypothesis, I ran the Contrast Python Agent and manually verified what I saw with my own eyes with a small Quart app.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;ln&#34;&gt; 1&lt;/span&gt;from quart import Quart, request, redirect
+&lt;span class=&#34;ln&#34;&gt; 2&lt;/span&gt;from contrast.quart import ContrastMiddleware
+&lt;span class=&#34;ln&#34;&gt; 3&lt;/span&gt;
+&lt;span class=&#34;ln&#34;&gt; 4&lt;/span&gt;app = Quart(__name__)
+&lt;span class=&#34;ln&#34;&gt; 5&lt;/span&gt;app.asgi_app = ContrastMiddleware(app)
+&lt;span class=&#34;ln&#34;&gt; 6&lt;/span&gt;
+&lt;span class=&#34;ln&#34;&gt; 7&lt;/span&gt;@app.route(&amp;#34;/bad&amp;#34;)
+&lt;span class=&#34;ln&#34;&gt; 8&lt;/span&gt;async def unvalidated_redirect():
+&lt;span class=&#34;ln&#34;&gt; 9&lt;/span&gt;    user_input = request.args.get(&amp;#34;user_input&amp;#34;)
+&lt;span class=&#34;ln&#34;&gt;10&lt;/span&gt;    return redirect(user_input)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Serving the app with the ContrastMiddleware means that the Python Agent will assess the application code. The Python Agent immediately alerted me to a Reflected XSS vulnerability on the this app.&lt;/p&gt;
+&lt;p&gt;Please note that Python Agent support for Quart will be released soon. You will be able to reproduce this at that time. To learn how to use the Python Agent for currently supported frameworks, please visit our &lt;a href=&#34;https://docs.contrastsecurity.com/en/python.html&#34;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To manually verify that any input I send as a &lt;code&gt;user_input&lt;/code&gt; parameter will be reflected back in the response body, I issued this command on the terminal&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;curl &amp;quot;http://localhost:8000/bad?user_input=&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;It responded back with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;ln&#34;&gt;1&lt;/span&gt;&amp;lt;!doctype html&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;2&lt;/span&gt;&amp;lt;title&amp;gt;Redirect&amp;lt;/title&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;3&lt;/span&gt;&amp;lt;h1&amp;gt;Redirect&amp;lt;/h1&amp;gt;
+&lt;span class=&#34;ln&#34;&gt;4&lt;/span&gt;You should be redirected to &amp;lt;a href=&amp;#34;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;#34;&amp;gt;&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;&amp;lt;/a&amp;gt;, if not please click the link
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Voila! The &lt;code&gt;user_input&lt;/code&gt; script is right there. For more proof, I opened this on a browser.&lt;/p&gt;
+&lt;img src=&#39;../../images/reflected-xss.png&#39; /&gt;
+&lt;p&gt;At Contrast we value teamwork, so my next step was to ask my fellow Python Agent developers to verify what I saw, and they confirmed. The Contrast Labs team jumped on and also confirmed the finding.&lt;/p&gt;
+&lt;h2 id=&#34;response-from-quart-maintainer&#34;&gt;Response from Quart Maintainer&lt;/h2&gt;
+&lt;p&gt;Once Contrast confirmed my finding, I followed Contrast&#39;s &lt;a href=&#34;https://www.contrastsecurity.com/disclosure-policy&#34;&gt;Vulnerability Disclosure Policy&lt;/a&gt; and reached out to Quart&#39;s maintainer &lt;a href=&#34;https://pgjones.dev/&#34;&gt;Phil Jones&lt;/a&gt; via email. He responded briefly after and agreed I found a security bug that needed to be fixed ASAP.&lt;/p&gt;
+&lt;p&gt;Phil issued a &lt;a href=&#34;https://gitlab.com/pgjones/quart/-/commit/d125044a2292231fc5edd95cc5110d08640ecab5&#34;&gt;fix&lt;/a&gt; to the Quart code. I hope it gets released quickly!&lt;/p&gt;
+
+        
+      </description>
+    </item>
+    
     <item>
       <title>Privilege Escalation in Popular Blogging Platform</title>
       <link>https://contrast.security/post/privilege-escalation-ghost/</link>

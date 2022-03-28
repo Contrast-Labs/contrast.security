@@ -6,7 +6,7 @@
     <description>Recent content in ctf on Contrast Labs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Copyright © 2021, Contrast Security; all rights reserved.</copyright>
+    <copyright>Copyright © 2022, Contrast Security; all rights reserved.</copyright>
     <lastBuildDate>Thu, 23 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Tips and Tactics for Creating your own Capture-the-Flag Event</title>
@@ -22,7 +22,7 @@
 &lt;h2 id=&#34;what-is-a-ctf-event&#34;&gt;What Is a CTF event?&lt;/h2&gt;
 &lt;p&gt;A CTF event is a competition that takes major disciplines of information security and makes them into smaller, objectively measurable exercises. Participants attempt to solve challenges by solving, exploiting, breaking, or other cybersecurity tradecraft. There are two major types of CTFs: jeopardy and attack defend.&lt;/p&gt;
 &lt;p&gt;In a &lt;em&gt;jeopardy-style CTF event&lt;/em&gt;, participants are presented a board filled with categories and challenges of varying point levels. As challenges are solved, the team earns points associated with each challenge and moves up the leaderboard accordingly. Ties are often broken by whichever team first achieved the score. Jeopardy CTF contests are the most common form of cybersecurity competition today.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#39;../../images/ctf-jeopardy.webp&#39; /&gt;&lt;/p&gt;
+&lt;img src=&#39;../../images/ctf-jeopardy.webp&#39; /&gt;
 &lt;p&gt;&lt;em&gt;Attack defend CTF events&lt;/em&gt; are quite different in structure. Each team is scored based on the amount of time they keep services up and running throughout the event. Meanwhile, each team can also attack other teams’ services, which are often intentionally vulnerable in myriad ways.&lt;/p&gt;
 &lt;p&gt;From an educational standpoint, especially from the lens of developers, I believe the jeopardy-style CTF is best. Here, each participant is focused on challenging themselves, not their competitors. Thus, for the purposes of this post, I will address jeopardy-style CTFs only.&lt;/p&gt;
 &lt;h2 id=&#34;creating-the-ctf-event&#34;&gt;Creating the CTF Event&lt;/h2&gt;

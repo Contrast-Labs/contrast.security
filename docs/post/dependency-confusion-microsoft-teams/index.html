@@ -37,12 +37,12 @@
 
     
     
-    <link rel="preload" href="https://contrast.security/css/styles.830f689224ac89b4dc90870f1c0829013c2d8a71d533447e3bd5068437cdaefd90122ff2b457ee4000213d015469eaa7813d2d119ab4b09abf705a4aae3bb68d.css" integrity = "sha512-gw9okiSsibTckIcPHAgpATwtinHVM0R&#43;O9UGhDfNrv2QEi/ytFfuQAAhPQFUaeqngT0tEZq0sJq/cFpKrju2jQ==" as="style" crossorigin="anonymous">
+    <link rel="preload" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity = "sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" as="style" crossorigin="anonymous">
     <link rel="preload" href="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" as="script" integrity=
     "sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous">
 
     
-    <link rel="stylesheet" type="text/css" href="https://contrast.security/css/styles.830f689224ac89b4dc90870f1c0829013c2d8a71d533447e3bd5068437cdaefd90122ff2b457ee4000213d015469eaa7813d2d119ab4b09abf705a4aae3bb68d.css" integrity="sha512-gw9okiSsibTckIcPHAgpATwtinHVM0R&#43;O9UGhDfNrv2QEi/ytFfuQAAhPQFUaeqngT0tEZq0sJq/cFpKrju2jQ==" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity="sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" crossorigin="anonymous">
     
   </head>
   
@@ -166,23 +166,23 @@
 <p>I began by looking at the dependencies used by the Teams desktop application. In one section of the application, I saw a node.js package called “Optional Dependencies.” Typically, the intent of optional dependencies is to provide a place to store binary files that are a part of the testing suite, but not the production application.</p>
 <p>The interesting thing about optional dependencies is that if they do not exist in the repository from which a developer is trying to pull them, the build will fail silently. Thus, developers must write code that is relatively defensive when optional dependencies exist. Specifically, one cannot “depend” on a dependency that is optional.</p>
 <p>Inside the Teams desktop application is a package file that lists the dependencies that the application needed in order to be built. When one downloads and installs the application, it does not reach out to the dependency managers. This is because every part of the application is built on a Microsoft server somewhere, after which it is shipped to customers.</p>
-<p><img src="../../images/teams-manifest.png" /></p>
+<img src="../../images/teams-manifest.png" />
 <p>Now back to what I discovered. When analyzing the package, I noticed a number of modules in both public and private repositories. I also saw that some of the private packages were not taking advantage of the <a href="https://docs.npmjs.com/cli/v7/using-npm/scope">scoping capability</a> provided by npm. I noted that some of the optional dependencies did not exist on disk inside the package itself. This means that during the build process those dependencies would not be found in any repository—public or private. By design, these optional dependencies failed silently whenever the application attempted to pull them from both the public and private repositories.</p>
 <h2 id="my-probe-gets-a-response">My Probe Gets a Response</h2>
 <p>I then selected one of the modules that was listed as an “optional dependency” and registered it on npm, setting the version to 0.0.1. I added a simple line of code in the install script of the package to alert me when it was installed. Once I was ready to deploy, I set the version of the module to match the version number from the application. At this point, I had two choices: bump the version number up by one and wait for Microsoft to update and pull in the new version, or keep it at the current version and hope that a build server would pull in a fresh copy of it (not using packagelock.json).</p>
 <p>There are risks either way, but I decided to do what would be least impactful—keeping the version number the same. As soon as I set one of the dependencies to a high enough version, I started getting requests from the module being installed from a number of internal Microsoft IP addresses. The name of the module was relatively generic, but it was Microsoft-specific and not an overly common word.</p>
-<p><img src="../../images/teams-post-install.png" /></p>
+<img src="../../images/teams-post-install.png" />
 <p>I happened to be doing this research late at night. Based on that and other factors, I deduced that the responses were most likely from internal, automated resources within Microsoft that were pulling the dependencies and installing them—perhaps an automated continuous integration/continuous deployment (CI/CD) server. But it could also have been a live developer working a late shift in the U.S. or a daytime shift somewhere overseas.</p>
 <h2 id="the-risk-posed-by-this-vulnerability">The Risk Posed By This Vulnerability</h2>
 <p>Whether the responses I saw were automated or manual, the fact that I was able to generate this reaction poses significant risk. By taking advantage of the post-install script, I was able to execute code in whatever environment this was being installed on. If attackers were to execute code the way I did on a build server for a desktop application update that was about to be distributed, they could insert anything they wanted into that update, and that code would go out to every desktop using Teams—more than 115 million machines. Such an attack could have monumental repercussions, potentially affecting as many organizations as the massive <a href="https://www.contrastsecurity.com/security-influencers/solarwinds-hack-exposes-long-overdue-prioritization-of-software-security?hsLang=en-us">attack on the SolarWinds software factory</a> that was revealed in December.</p>
-<p><img src="../../images/teams-build-server.png" /></p>
+<img src="../../images/teams-build-server.png" />
 <p>And the risk of this vulnerability may not be limited to Microsoft Teams. The fact that this package is stored in an internal repository means that it is likely used in any number of other Microsoft products. If the code in question were only a part of the Teams desktop application, it would likely be simply added to the software as custom code rather than being stored in an internal repository. As an example, the specific module used in this case is also used by Skype, which could potentially fall victim to the same kind of attack.</p>
 <h2 id="protecting-the-software-supply-chain">Protecting the Software Supply Chain</h2>
 <p>The research findings described here highlight the need for organizations to take the entire software supply chain into account when designing an application security strategy. The need to protect internally developed applications—and the third-party libraries that comprise so much of their code base these days—may seem obvious. And the importance of securing and properly configuring the developer tools used to build that software is becoming more apparent as vulnerabilities like dependency confusion are revealed.</p>
 <p>But the software supply chain does not end with the internal software factory. The potential vulnerability that I discovered in Microsoft Teams is a reminder that an organization’s application security strategy must extend to include off-the-shelf applications that every organization uses for vital business functions. Microsoft customers using the Teams desktop application have no control over how that software is produced, but they must be prepared for instances when it may be compromised.</p>
 <h2 id="the-story-continues">The Story Continues</h2>
 <p>I submitted this vulnerability to Microsoft late in the day on February 12—the Friday before a holiday weekend. Since my submission, I have received feedback from Microsoft that the packages we viewed as “at risk” were removed—or more specifically “unpublished by npm-support.” (It should be noted that Microsoft owns GitHub, which owns npm.) This means that these specific packages no longer pose a risk to Microsoft and its customers. As a result of these actions, Microsoft closed the issue as a “No Fix.” However, Microsoft has yet to give us any information around their internal investigations around their actual risk.</p>
-<p><img src="../../images/teams-timeline.png" /></p>
+<img src="../../images/teams-timeline.png" />
 <p>Working on bug bounties is a regular part of what my team and I do at Contrast Labs. I personally derive a lot of enjoyment from doing security research. It keeps me sharp and helps keep me up with the tactics of cyber criminals. In particular, since we use a lot of SaaS applications internally at Contrast, it helps our organization as much as it helps others.</p>
 <h2 id="for-more-information">For More Information</h2>
 <p>For more information on newly discovered dependency confusion vulnerabilities impacting the software factories at numerous companies, read my earlier blog, “<a href="https://www.contrastsecurity.com/security-influencers/dependency-confusion-a-new-third-party-risk-for-the-software-factory?hsLang=en-us">Dependency Confusion: A New Third-Party Risk for the Software Factory</a>”.</p>
@@ -200,8 +200,17 @@
         Security researchers, security engineers, speakers, and community contributers.
       </div>
       <a href='https://contrast.security/about/' class="button mt-1" role="button" title='Read More'>Read More</a>
+    <h2 class="mt-4">Featured Posts</h2>
+    <ul>
+      <li>
+        <a href="https://contrast.security/post/xss-vuln-in-quart-python-framework/" class="nav-link" title="Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework">Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework</a>
+      </li>
+    </ul>
     <h2 class="mt-4">Recent Posts</h2>
     <ul class="flex-column">
+      <li>
+        <a href="https://contrast.security/post/xss-vuln-in-quart-python-framework/" class="nav-link" title="Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework">Contrast Agent Discovers Reflected XSS Vulnerability in Quart Framework</a>
+      </li>
       <li>
         <a href="https://contrast.security/post/dependency-confusion-third-party-risk/" class="nav-link" title="Dependency Confusion: A New Third-Party Risk for the Software Factory">Dependency Confusion: A New Third-Party Risk for the Software Factory</a>
       </li>
@@ -230,6 +239,16 @@
           <span class="button_tally">2</span>
         </a>
         
+        <a href='https://contrast.security/tags/xss/' class="post_tag button button_translucent" title="xss">
+          XSS
+          <span class="button_tally">2</span>
+        </a>
+        
+        <a href='https://contrast.security/tags/contrast-agent/' class="post_tag button button_translucent" title="contrast-agent">
+          CONTRAST-AGENT
+          <span class="button_tally">1</span>
+        </a>
+        
         <a href='https://contrast.security/tags/ctf/' class="post_tag button button_translucent" title="ctf">
           CTF
           <span class="button_tally">1</span>
@@ -245,6 +264,11 @@
           <span class="button_tally">1</span>
         </a>
         
+        <a href='https://contrast.security/tags/python/' class="post_tag button button_translucent" title="python">
+          PYTHON
+          <span class="button_tally">1</span>
+        </a>
+        
         <a href='https://contrast.security/tags/thought-leaders/' class="post_tag button button_translucent" title="thought-leaders">
           THOUGHT-LEADERS
           <span class="button_tally">1</span>
@@ -252,11 +276,6 @@
         
         <a href='https://contrast.security/tags/tutorials/' class="post_tag button button_translucent" title="tutorials">
           TUTORIALS
-          <span class="button_tally">1</span>
-        </a>
-        
-        <a href='https://contrast.security/tags/xss/' class="post_tag button button_translucent" title="xss">
-          XSS
           <span class="button_tally">1</span>
         </a>
         
@@ -334,7 +353,7 @@
 <footer class="footer">
   <div class="footer_inner wrap pale">
     <img src='https://contrast.security/icons/apple-touch-icon.png' class="icon icon_2 transparent" alt="Contrast Labs">
-    <p>Copyright&nbsp;<span class="year"></span>&nbsp;CONTRAST LABS. All Rights Reserved</p><a class="to_top" href="#documentTop">
+    <p>Copyright&nbsp;2021-&nbsp;<span class="year"></span>&nbsp;CONTRAST LABS. All Rights Reserved</p><a class="to_top" href="#documentTop">
   <svg class="icon">
   <use xlink:href="#arrow"></use>
 </svg>

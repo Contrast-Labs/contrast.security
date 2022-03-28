@@ -37,3 +37,9 @@ Adam Schaal has an extensive background in both development and application secu
 
 
 <!-- Need to add rest of team -->
+
+### Other Contrast Researchers
+
+<b>Dani Litovsky Alcala · Staff Engineer, Python Agent · danalitovsky@gmail.com</b>
+
+Dani is a Python programmer with a background in data engineering and machine learning. She enjoys writing maintainable, highly-tested code and leading a team of developers. After living all over the world, Dani currently works from the SF Bay Area with her two coworkers: husband Max and dog Charlie.

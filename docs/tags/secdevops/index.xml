@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>secdevops on Contrast Labs</title>
+    <link>https://contrast.security/tags/secdevops/</link>
+    <description>Recent content in secdevops on Contrast Labs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright © 2022, Contrast Security; all rights reserved.</copyright>
+    <lastBuildDate>Wed, 02 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://contrast.security/tags/secdevops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Using Github Properly and Eating our own Dogfood</title>
+      <link>https://contrast.security/post/using-github-properly-and-eating-our-own-dogfood/</link>
+      <pubDate>Wed, 02 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://contrast.security/post/using-github-properly-and-eating-our-own-dogfood/</guid>
+      <description>
+        
+          &lt;p&gt;As a newly minted Director of Product Security, one of the first things that I looked into was Contrast Security&#39;s use of Source Code Manager (SCM) tools.&lt;/p&gt;
+
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

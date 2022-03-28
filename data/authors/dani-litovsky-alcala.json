@@ -1,0 +1,13 @@
+{
+  "name": "Dani Litovsky Alcala",
+  "title": "Staff Engineer, Python Agent",
+  "bio": "Dani is a Python programmer with a background in data engineering and machine learning. She enjoys writing maintainable, highly-tested code and leading a team of developers. After living all over the world, Dani currently works from the SF Bay Area with her two coworkers: husband Max and dog Charlie.",
+  "image": "../../images/authors/contrastninja.jpg",
+  "weight": 1,
+  "social": {
+    "twitter": "",
+    "github": "",
+    "website": "",
+    "email": "danalitovsky@gmail.com"
+  }
+}

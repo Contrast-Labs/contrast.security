@@ -2,11 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://contrast.security/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/post/xss-vuln-in-quart-python-framework/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/tags/contrast-agent/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/post/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/tags/python/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/tags/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://contrast.security/tags/xss/</loc>
+    <lastmod>2022-03-23T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://contrast.security/about/</loc>
     <lastmod>2021-08-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://contrast.security/</loc>
-    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://contrast.security/post/dependency-confusion-microsoft-teams/</loc>
     <lastmod>2021-03-04T00:00:00+00:00</lastmod>
@@ -15,12 +33,6 @@
     <lastmod>2021-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://contrast.security/tags/hacked/</loc>
-    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://contrast.security/post/</loc>
-    <lastmod>2021-03-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://contrast.security/tags/</loc>
     <lastmod>2021-03-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://contrast.security/post/dependency-confusion-third-party-risk/</loc>
@@ -51,9 +63,6 @@
     <lastmod>2019-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://contrast.security/tags/privilege-escalation/</loc>
-    <lastmod>2019-04-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://contrast.security/tags/xss/</loc>
     <lastmod>2019-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://contrast.security/categories/</loc>
