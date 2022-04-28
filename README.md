@@ -35,6 +35,8 @@ git push -u origin main
 
 Adding blog posts, etc is as simple as adding a [new markdown file here](https://github.com/Contrast-Labs/contrast.security/tree/main/content/post).
 
+You will then need to rebuild the site with hugo and push it up to this repo. A Github pages bot will auto update contrast.security momentarily afterwards.
+
 Things to keep in mind for adding a new article.  
 
 1. Make sure to follow the standard heading (example below).
@@ -62,3 +64,5 @@ thumbnail = "images/microsoft-teams.png"
 ## Adding authors 
 
 Adding authors is a `json` file that goes [here](https://github.com/Contrast-Labs/contrast.security/tree/main/data/authors).  Be sure to add a photo [here](https://github.com/Contrast-Labs/contrast.security/tree/main/static/images/authors) if you'd like to.  Please add yourself upon publishing your first article.
+
+You will then need to rebuild the site with hugo and push it up to this repo. A Github pages bot will auto update contrast.security momentarily afterwards.
