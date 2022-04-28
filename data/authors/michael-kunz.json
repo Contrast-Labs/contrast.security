@@ -1,0 +1,12 @@
+{
+  "name": "Michael Kunz",
+  "title": "Senior Security Researcher",
+  "bio": "Hacker by day amateur rc pilot by night",
+  "image": "../../images/authors/contrastninja.jpg",
+  "weight": 1,
+  "social": {
+    "twitter": "mkunzsec",
+    "github": "https://www.github.com/mkunzcs",
+    "website": "https://ku.nz/blog"
+  }
+}
