@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "styles.css",
-	"sourceRoot": "/Users/adamschaal/Work/contrast.security",
+	"sourceRoot": "/Users/michaelkunz/Desktop/newcs/test/contrast.security",
 	"sources": [
 		"themes/hugo-clarity/assets/sass/main.sass",
 		"themes/hugo-clarity/assets/sass/_variables.sass",

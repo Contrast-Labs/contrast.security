@@ -38,8 +38,8 @@
     
     
     <link rel="preload" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity = "sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" as="style" crossorigin="anonymous">
-    <link rel="preload" href="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" as="script" integrity=
-    "sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous">
+    <link rel="preload" href="https://contrast.security/js/bundle.min.58d354d720684f08fce02d27e53fda5ae3ea95978849c86fd848c7a91d1ce472bd66c48fe32cc440f01cbc0992f96bd7a3e18a5153b0c26d4c7c84a23defb2b2.js" as="script" integrity=
+    "sha512-WNNU1yBoTwj84C0n5T/aWuPqlZeISchv2EjHqR0c5HK9ZsSP4yzEQPAcvAmS&#43;WvXo&#43;GKUVOwwm1MfISiPe&#43;ysg==" crossorigin="anonymous">
 
     
     <link rel="stylesheet" type="text/css" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity="sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" crossorigin="anonymous">
@@ -158,26 +158,26 @@
 <p>Before delving into the vulnerability I found in Quart code, allow me to point you to some excellent resources. Reflected XSS is a well documented vulnerability. You may find more information in our Contrast Security <a href="https://www.contrastsecurity.com/knowledge-hub/glossary/cross-site-scripting-prevention">Cross-Site Scripting</a> page which describes various types of XSS vulnerabilities, including Reflected XSS, and the <a href="https://owasp.org/www-community/attacks/xss/">OWASP Foundation</a>.</p>
 <p>As a Python Agent engineer, I'm deeply familiar with all types of security vulnerabilities. As I worked on adding Contrast support for Quart, I noticed that the <code>redirect</code> function <a href="https://gitlab.com/pgjones/quart/-/blob/0.16.3/src/quart/utils.py#L37">injected</a> the location of the redirected url directly in the response body. I saw no sanitization of the <code>location</code> argument. I dug around the public <a href="https://pgjones.gitlab.io/quart/tutorials/blog_tutorial.html">Quart documentation</a> and noticed that all calls to <code>redirect</code> relied on <code>url_for</code> having been called. My senses began tingling:  we can't always expect programmers will properlly sanitize and encode input. I could see that anything passed on to <code>redirect</code> would be reflected right back to the user via the response body.</p>
 <p>To test my hypothesis, I ran the Contrast Python Agent and manually verified what I saw with my own eyes with a small Quart app.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>from quart import Quart, request, redirect
-<span class="ln"> 2</span>from contrast.quart import ContrastMiddleware
-<span class="ln"> 3</span>
-<span class="ln"> 4</span>app = Quart(__name__)
-<span class="ln"> 5</span>app.asgi_app = ContrastMiddleware(app)
-<span class="ln"> 6</span>
-<span class="ln"> 7</span>@app.route(&#34;/bad&#34;)
-<span class="ln"> 8</span>async def unvalidated_redirect():
-<span class="ln"> 9</span>    user_input = request.args.get(&#34;user_input&#34;)
-<span class="ln">10</span>    return redirect(user_input)
-</code></pre></div><p>Serving the app with the ContrastMiddleware means that the Python Agent will assess the application code. The Python Agent immediately alerted me to a Reflected XSS vulnerability on the this app.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln"> 1</span><span class="cl">from quart import Quart, request, redirect
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">from contrast.quart import ContrastMiddleware
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">app = Quart(__name__)
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">app.asgi_app = ContrastMiddleware(app)
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">@app.route(&#34;/bad&#34;)
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">async def unvalidated_redirect():
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">    user_input = request.args.get(&#34;user_input&#34;)
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    return redirect(user_input)
+</span></span></code></pre></div><p>Serving the app with the ContrastMiddleware means that the Python Agent will assess the application code. The Python Agent immediately alerted me to a Reflected XSS vulnerability on the this app.</p>
 <p>Please note that Python Agent support for Quart will be released soon. You will be able to reproduce this at that time. To learn how to use the Python Agent for currently supported frameworks, please visit our <a href="https://docs.contrastsecurity.com/en/python.html">documentation</a>.</p>
 <p>To manually verify that any input I send as a <code>user_input</code> parameter will be reflected back in the response body, I issued this command on the terminal</p>
 <p><code>curl &quot;http://localhost:8000/bad?user_input=&lt;script&gt;alert(1)&lt;/script&gt;&quot;</code></p>
 <p>It responded back with</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>&lt;!doctype html&gt;
-<span class="ln">2</span>&lt;title&gt;Redirect&lt;/title&gt;
-<span class="ln">3</span>&lt;h1&gt;Redirect&lt;/h1&gt;
-<span class="ln">4</span>You should be redirected to &lt;a href=&#34;&lt;script&gt;alert(1)&lt;/script&gt;&#34;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/a&gt;, if not please click the link
-</code></pre></div><p>Voila! The <code>user_input</code> script is right there. For more proof, I opened this on a browser.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln">1</span><span class="cl">&lt;!doctype html&gt;
+</span></span><span class="line"><span class="ln">2</span><span class="cl">&lt;title&gt;Redirect&lt;/title&gt;
+</span></span><span class="line"><span class="ln">3</span><span class="cl">&lt;h1&gt;Redirect&lt;/h1&gt;
+</span></span><span class="line"><span class="ln">4</span><span class="cl">You should be redirected to &lt;a href=&#34;&lt;script&gt;alert(1)&lt;/script&gt;&#34;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/a&gt;, if not please click the link
+</span></span></code></pre></div><p>Voila! The <code>user_input</code> script is right there. For more proof, I opened this on a browser.</p>
 <img src='../../images/reflected-xss.png' />
 <p>At Contrast we value teamwork, so my next step was to ask my fellow Python Agent developers to verify what I saw, and they confirmed. The Contrast Labs team jumped on and also confirmed the finding.</p>
 <h2 id="response-from-quart-maintainer">Response from Quart Maintainer</h2>
@@ -358,7 +358,7 @@
   </div>
 </footer>
 
-    <script type="text/javascript" src="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" integrity="sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://contrast.security/js/bundle.min.58d354d720684f08fce02d27e53fda5ae3ea95978849c86fd848c7a91d1ce472bd66c48fe32cc440f01cbc0992f96bd7a3e18a5153b0c26d4c7c84a23defb2b2.js" integrity="sha512-WNNU1yBoTwj84C0n5T/aWuPqlZeISchv2EjHqR0c5HK9ZsSP4yzEQPAcvAmS&#43;WvXo&#43;GKUVOwwm1MfISiPe&#43;ysg==" crossorigin="anonymous"></script>
     
   </body>
 </html>

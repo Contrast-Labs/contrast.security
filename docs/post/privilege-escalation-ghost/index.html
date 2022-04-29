@@ -38,8 +38,8 @@
     
     
     <link rel="preload" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity = "sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" as="style" crossorigin="anonymous">
-    <link rel="preload" href="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" as="script" integrity=
-    "sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous">
+    <link rel="preload" href="https://contrast.security/js/bundle.min.58d354d720684f08fce02d27e53fda5ae3ea95978849c86fd848c7a91d1ce472bd66c48fe32cc440f01cbc0992f96bd7a3e18a5153b0c26d4c7c84a23defb2b2.js" as="script" integrity=
+    "sha512-WNNU1yBoTwj84C0n5T/aWuPqlZeISchv2EjHqR0c5HK9ZsSP4yzEQPAcvAmS&#43;WvXo&#43;GKUVOwwm1MfISiPe&#43;ysg==" crossorigin="anonymous">
 
     
     <link rel="stylesheet" type="text/css" href="https://contrast.security/css/styles.d1491f85cf91b32f90d24d38764f26d87bfe98cf15807c14fd91e56f7ce8157117b330cc609e5f7376ce06f1b54327012b6a839bdb5406c5a7e306bea0483a77.css" integrity="sha512-0Ukfhc&#43;Rsy&#43;Q0k04dk8m2Hv&#43;mM8VgHwU/ZHlb3zoFXEXszDMYJ5fc3bOBvG1QycBK2qDm9tUBsWn4wa&#43;oEg6dw==" crossorigin="anonymous">
@@ -185,23 +185,23 @@
 <li>Owner: An admin who cannot be deleted and has access to billing details</li>
 </ul>
 <p>However, Matt never received any feedback from his submission to Ghost about the privilege escalation bypass. On October 16, 2018, a new <a href="https://github.com/TryGhost/docs/commit/c65058852181813a216fdc8b8134dc7c4e1aba84#diff-cb5c147b83c6023fea4cec2b394f3fd4">commit</a> was submitted to the GitHub repository for Ghost that said:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln">1</span>#### However, we&#39;re generally _not_ interested in...
-<span class="ln">2</span>
-<span class="ln">3</span>- [Privilege escalation](#xss--privilege-escalation-attacks) as result of trusted users publishing arbitrary JavaScript&lt;sup&gt;&lt;a href=&#34;#xss--privilege-escalation-attacks&#34;&gt;1&lt;/a&gt;&lt;sup&gt;
-</code></pre></div><p>Still, no response from Ghost to Matt’s submission, not even a thank you for your submission, we have updated our disclosure program to not involve privilege escalation.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln">1</span><span class="cl">#### However, we&#39;re generally _not_ interested in...
+</span></span><span class="line"><span class="ln">2</span><span class="cl">
+</span></span><span class="line"><span class="ln">3</span><span class="cl">- [Privilege escalation](#xss--privilege-escalation-attacks) as result of trusted users publishing arbitrary JavaScript&lt;sup&gt;&lt;a href=&#34;#xss--privilege-escalation-attacks&#34;&gt;1&lt;/a&gt;&lt;sup&gt;
+</span></span></code></pre></div><p>Still, no response from Ghost to Matt’s submission, not even a thank you for your submission, we have updated our disclosure program to not involve privilege escalation.</p>
 <p>Ghost also added the following, explaining their position:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="ln"> 1</span>Privilege escalation attacks
-<span class="ln"> 2</span>
-<span class="ln"> 3</span>Ghost is a content management system and all users are considered to be privileged/trusted. A user can only obtain an account and start creating content after they have been invited by the site owner or similar administrator-level user.
-<span class="ln"> 4</span>
-<span class="ln"> 5</span>A basic feature of Ghost as a CMS is to allow content creators to make use of scripts, SVGs, or embedded content that is required for the content to display as intended. Because of this, there will always be the possibility of &#34;XSS&#34; attacks, albeit only from users that have been trusted to build the site&#39;s content.
-<span class="ln"> 6</span>
-<span class="ln"> 7</span>Ghost&#39;s admin application does a lot to ensure that unknown scripts are not run within the admin application itself, however, that only protects one side of a Ghost site. If the front-end (the rendered site that anonymous visitors see) shares the same domain as the admin application then browsers do not offer sufficient protection to prevent successful XSS attacks by trusted users.
-<span class="ln"> 8</span>
-<span class="ln"> 9</span>If you are concerned that trusted users you invite to create your site will act maliciously the best advice is to split your front-end and admin area onto different domains (e.g. https://mysite.com and https://mysiteadmin.com/ghost/). This way browsers offer greater built-in protection because credentials cannot be read across domains. Even in this case, it should be understood that you are giving invited users completely free reign in content creation so absolute security guarantees do not exist.
-<span class="ln">10</span>
-<span class="ln">11</span>We take any attack vector where an untrusted user is able to inject malicious content very seriously and welcome any and all reports.
-</code></pre></div><p>As of April 29, 2019, Matt had not received a response from Ghost, so we are following our normal process of disclosure, as we feel the issue at hand warrants a fix, or at least a discussion from the community. We want applications to be secure, so let’s work together to fix the issues that need to be fixed and make sure all users feel safe using the Ghost platform.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="ln"> 1</span><span class="cl">Privilege escalation attacks
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">Ghost is a content management system and all users are considered to be privileged/trusted. A user can only obtain an account and start creating content after they have been invited by the site owner or similar administrator-level user.
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">A basic feature of Ghost as a CMS is to allow content creators to make use of scripts, SVGs, or embedded content that is required for the content to display as intended. Because of this, there will always be the possibility of &#34;XSS&#34; attacks, albeit only from users that have been trusted to build the site&#39;s content.
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">Ghost&#39;s admin application does a lot to ensure that unknown scripts are not run within the admin application itself, however, that only protects one side of a Ghost site. If the front-end (the rendered site that anonymous visitors see) shares the same domain as the admin application then browsers do not offer sufficient protection to prevent successful XSS attacks by trusted users.
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">If you are concerned that trusted users you invite to create your site will act maliciously the best advice is to split your front-end and admin area onto different domains (e.g. https://mysite.com and https://mysiteadmin.com/ghost/). This way browsers offer greater built-in protection because credentials cannot be read across domains. Even in this case, it should be understood that you are giving invited users completely free reign in content creation so absolute security guarantees do not exist.
+</span></span><span class="line"><span class="ln">10</span><span class="cl">
+</span></span><span class="line"><span class="ln">11</span><span class="cl">We take any attack vector where an untrusted user is able to inject malicious content very seriously and welcome any and all reports.
+</span></span></code></pre></div><p>As of April 29, 2019, Matt had not received a response from Ghost, so we are following our normal process of disclosure, as we feel the issue at hand warrants a fix, or at least a discussion from the community. We want applications to be secure, so let’s work together to fix the issues that need to be fixed and make sure all users feel safe using the Ghost platform.</p>
 
 
   </article>
@@ -380,7 +380,7 @@
   </div>
 </footer>
 
-    <script type="text/javascript" src="https://contrast.security/js/bundle.min.d14fbcd65c3ba32e60cab81f8bbe7aa9b7f8b95ff8290e437fb26ff9ab7f7ea0c928db2dca60aac91f192db906f2d90678f83907e4e3994f6ff9fdb5bdea3369.js" integrity="sha512-0U&#43;81lw7oy5gyrgfi756qbf4uV/4KQ5Df7Jv&#43;at/fqDJKNstymCqyR8ZLbkG8tkGePg5B&#43;TjmU9v&#43;f21veozaQ==" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://contrast.security/js/bundle.min.58d354d720684f08fce02d27e53fda5ae3ea95978849c86fd848c7a91d1ce472bd66c48fe32cc440f01cbc0992f96bd7a3e18a5153b0c26d4c7c84a23defb2b2.js" integrity="sha512-WNNU1yBoTwj84C0n5T/aWuPqlZeISchv2EjHqR0c5HK9ZsSP4yzEQPAcvAmS&#43;WvXo&#43;GKUVOwwm1MfISiPe&#43;ysg==" crossorigin="anonymous"></script>
     
   </body>
 </html>
