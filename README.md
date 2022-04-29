@@ -63,6 +63,6 @@ thumbnail = "images/microsoft-teams.png"
 
 ## Adding authors 
 
-Adding authors is a `json` file that goes [here](https://github.com/Contrast-Labs/contrast.security/tree/main/data/authors).  Be sure to add a photo [here](https://github.com/Contrast-Labs/contrast.security/tree/main/static/images/authors) if you'd like to.  Please add yourself upon publishing your first article.
+Adding authors is a `json` file that goes [here](https://github.com/Contrast-Labs/contrast.security/tree/main/data/authors).  Be sure to add a photo [here](https://github.com/Contrast-Labs/contrast.security/tree/main/static/images/authors) if you'd like to.  You will also need to add yourself to the about page under [content/about.md](https://github.com/Contrast-Labs/contrast.security/tree/main/content/about.md). Please add yourself upon publishing your first article.
 
 You will then need to rebuild the site with hugo and push it up to this repo. A Github pages bot will auto update contrast.security momentarily afterwards.
