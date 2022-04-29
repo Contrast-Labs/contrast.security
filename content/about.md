@@ -35,6 +35,9 @@ Matt is an accomplished application security expert with over 11 years of experi
 
 Adam Schaal has an extensive background in both development and application security. As he has experienced both sides of making and breaking applications, he is able to relate to both audiences. Adam enjoys contributing to information security projects such as the CTF platform redctf and the malicious cable implant O.MG-Cable. He is also very active in his local security community as a founder of Kernelcon, a mid-size information security conference, and DEF CON 402, a local DEF CON group. Adam works out of Omaha, Nebraska, one of the least likely places in the United States to encounter shark attacks or suffer altitude sickness.
 
+<b>Michael Kunz  ·  Senior Security Researcher  ·  [@mkunzsec](https://twitter.com/mkunzsec)</b>
+
+Michael is an accomplished application security expert. He is a hacker by day and flies drones and remote controlled aircraft by night.
 
 <!-- Need to add rest of team -->
 
